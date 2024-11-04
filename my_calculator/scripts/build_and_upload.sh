@@ -9,18 +9,27 @@ usage() {
     exit 1
 }
 
+cd ..
+
+if [ -d "venv" ]; then
+    echo "Virtual environment 'venv' exists. Deleting it..."
+    rm -rf venv
+fi
+
+python -m venv venv
+
 # Upgrade pip and install required packages
 echo "Upgrading pip and installing required packages..."
-pip install --upgrade pip
-pip install --upgrade setuptools wheel twine
+venv/bin/pip install --upgrade pip
+venv/bin/pip install --upgrade setuptools wheel twine
 
 # Clean previous builds
 echo "Cleaning up previous builds..."
-rm -rf build/ dist/ my_calculator.egg-info/
+rm -rf build/ dist/ Chandramouli_Iyer_calculator_0063.egg-info
 
 # Run unit tests
 echo "Running unit tests..."
-python -m unittest discover tests
+venv/bin/python -m unittest discover tests
 
 # Build the package
 echo "Building the package..."
@@ -28,17 +37,14 @@ python setup.py sdist bdist_wheel
 
 # Check the distribution files
 echo "Checking the distribution files..."
-twine check dist/*
+venv/bin/twine check dist/*
 
 # Upload the package
 echo "Uploading the package..."
-twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+venv/bin/twine upload --verbose --repository-url https://test.pypi.org/legacy/ dist/*
 
 # Install the package
 echo "Installing the package..."
-pip install --index-url https://test.pypi.org/simple/ Chandramouli-Iyer-calculator-0063
-
-# Deactivate virtual environment
-deactivate
+venv/bin/pip install --index-url https://test.pypi.org/simple/ Chandramouli-Iyer-calculator-0063
 
 echo "Done!"
